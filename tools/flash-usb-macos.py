@@ -88,10 +88,13 @@ def main():
             os.fsync(target.fileno())
         except OSError:
             pass
-    subprocess.run(['/bin/sync'], check=True)
-    read, last = 0, 0
-    digest = hashlib.sha256()
-    with open(raw, 'rb', buffering=0) as target:
+        subprocess.run(['/bin/sync'], check=True)
+        # Houd dezelfde raw device-handle open tijdens verificatie. Sluiten en
+        # opnieuw openen geeft Disk Arbitration gelegenheid om FAT te mounten
+        # en bijvoorbeeld Spotlight-bestanden toe te voegen voor de vergelijking.
+        target.seek(0)
+        read, last = 0, 0
+        digest = hashlib.sha256()
         while read < total:
             block = target.read(min(4 * 1024 * 1024, total - read))
             if not block:
