@@ -8,7 +8,7 @@ Eerste USB-prototype voor een Intel MacBookPro9,2: een eigen gamemenu en GitHub-
 2. Zet de MacBook aan en houd **Option/Alt** ingedrukt. Kies de USB-optie **EFI Boot**.
 3. Laat de eerste start en het vergroten van de gebruikerspartitie afronden. Dat kan enkele minuten duren.
 4. Configureer eventueel de controller door een knop ingedrukt te houden. Het menu werkt ook met het toetsenbord.
-5. Stel wifi in via het hoofdmenu. Gebruik ethernet als de wifi-chip nog niet werkt.
+5. Een lokaal voorgeladen wifi-profiel wordt automatisch toegepast. Zonder profiel stel je wifi in via het hoofdmenu. Controleer daar ook het IP-adres; een herkende wifi-chip bewijst nog geen verbinding.
 6. Gebruik de meegeleverde homebrew-games om beeld, geluid en bediening te testen. Voeg eigen games toe via de gebruikelijke Batocera-mappen.
 7. Sluit af vanuit het menu. De interne Windows-schijf wordt niet automatisch beschreven of geformatteerd.
 
@@ -32,12 +32,18 @@ Bij de test werd `/userdata` op een tijdelijke tmpfs van 256 MiB geplaatst. De o
 
 De D2-opstartbestanden bewaren service-uitvoer, systeemmeldingen en gamestartfouten. Shutdown overschrijft de opstartmetingen niet meer. Een minimumklok op de builddatum voorkomt dat een RTC die op 2022 staat meteen moderne HTTPS-certificaten afwijst; normale netwerktijdsynchronisatie blijft actief. Versie 0.1.1 herkent tijdelijke RAM-opslag, bewaart de concrete netwerkfout en accepteert een nieuwe seedversie.
 
+## Lokale wifi-instellingen
+
+Een persoonlijk profiel kan uitsluitend lokaal op de ext4-gegevenspartitie worden geplaatst als `/userdata/system/console-os/wifi.local.json`, met eigenaar root en rechten 0600. De velden zijn `ssid`, `password` en `country`. `boot/import-wifi.py` past dit na het initialiseren van de gegevenspartitie toe met Batocera's eigen wifi-helper, zonder een shell te gebruiken of netwerknaam en wachtwoord af te drukken. De tijdelijke profielkopie wordt daarna verwijderd; Batocera bewaart de instellingen in zijn lokale configuratie. Bij mislukte configuratie blijft het profiel beschikbaar voor een volgende poging. Het importresultaat bevestigt instellingen, geen geslaagde internetverbinding.
+
+Wachtwoorden horen niet op de FAT-bootpartitie of in de broncode. `.gitignore` sluit lokale profielen, configuraties, secrets-mappen en env-bestanden uit. De releasebouwer accepteert uitsluitend de bedoelde runtime- en themabestanden en weigert lokale bestanden en symlinks, ook als iemand ze per ongeluk onder `payload` plaatst. Wifi-instellingen worden niet naar GitHub gestuurd. Gitignore en bestandsrechten versleutelen de stick niet.
+
 ## Grenzen van het prototype
 
-- Eerste fysieke test op de MacBookPro9,2: joystick-opstartscherm gevolgd door zwart beeld. De USB-gegevenspartitie bleef leeg en onveranderd op 512 MiB; de eigen menulaag heeft die partitie dus niet bereikt. De D1-diagnose voegt `boot/boot-custom.sh` en `boot/trace-stage.sh` toe om fasen vóór `/userdata` op FAT te loggen. Dit is diagnose, nog geen bewezen oplossing voor de oorzaak. Op de teststick zijn ook zichtbare opstartmeldingen en 1280×800 ingesteld. Laat deze test drie minuten draaien en sluit de laptop af voordat de USB wordt verwijderd.
+- De eerste fysieke test eindigde na het joystick-scherm in zwart beeld. Met de D1-opstartbestanden werken beeld en PS4-bediening; de gegevensopslag en gamestart worden met D2 opnieuw getest. Laat deze test drie minuten draaien en sluit de laptop af voordat de USB wordt verwijderd.
 
-- Beeld, geluid, wifi en Bluetooth moeten nog op de echte MacBook worden getest. De diagnose in Windows bewijst Linux-compatibiliteit niet.
-- De Broadcom BCM4331 wordt eerst met de beschikbare ingebouwde Linux-driver getest. Een Windows-driverfout is geen bewijs van een defecte chip.
+- Geluidsuitgangen en een Bluetooth-adapter worden herkend, maar geluidsweergave en Bluetooth-koppeling zijn nog niet bevestigd.
+- De Broadcom BCM4331 gebruikt de aanwezige b43-driver. De gemeten driver toont momenteel alleen 2,4 GHz; verbinding met een uitsluitend 5GHz-netwerk is hiermee niet aangetoond. Een Windows-driverfout is geen bewijs van een defecte chip.
 - De Wii U GamePad met scherm is nog niet gekoppeld. Die vereist aanvullend werk met geschikte wifi-hardware en gespecialiseerde software; gewone Bluetooth-pairing is niet voldoende.
 - GitHub-updates beheren onze eigen laag. Ze vervangen de Batocera-kernel of emulators niet. De basisdistributie heeft haar eigen updatefunctie.
 - Er wordt niet automatisch teruggeschakeld als een nieuw thema visueel verkeerd blijkt. Wel blijft de vorige versie bewaard en is `python3 /boot/console-os/runtime.py rollback` beschikbaar.
@@ -45,7 +51,7 @@ De D2-opstartbestanden bewaren service-uitvoer, systeemmeldingen en gamestartfou
 
 ## Uitgevoerde controles
 
-21 geautomatiseerde tests slagen voor de updater en de USB-doelcontroles. UEFI-boot en de installatie van de eigen laag zijn onder Linux gecontroleerd. De fysieke MacBook-test bevestigt werkend beeld en PS4-bediening. De uitgebreide USB-gegevenspartitie is offline gecontroleerd met e2fsck en de partitietabel met sgdisk. Het blijvend aankoppelen, het starten van games en een geslaagde internetverbinding moeten na D2 nog op de laptop worden bevestigd.
+29 geautomatiseerde tests slagen voor de updater, USB-doelcontroles, wifi-import en uitsluiting van lokale bestanden uit releases. UEFI-boot en de installatie van de eigen laag zijn onder Linux gecontroleerd. De fysieke MacBook-test bevestigt werkend beeld en PS4-bediening. De uitgebreide USB-gegevenspartitie is offline gecontroleerd met e2fsck en de partitietabel met sgdisk. Het blijvend aankoppelen, het starten van games en een geslaagde internetverbinding moeten na D2 nog op de laptop worden bevestigd.
 
 ## Een release maken
 
@@ -58,7 +64,7 @@ python3 build-release.py
 
 Maak na het uitvoeren van de tests een stabiele GitHub-release met tag `vMAJOR.MINOR.PATCH`. Voeg `dist/console-os-update.tar.gz` en de bijbehorende `.sha256` toe.
 
-De bootpartitie bevat `postshare.sh`, `console-os/runtime.py`, `console-os/config.json`, `console-os/seed.tar.gz` en `console-os/linux-report.sh`. `postshare.sh` wordt door Batocera uitgevoerd na het beschikbaar maken van `/userdata` en voor EmulationStation start. Netwerkfouten hebben korte time-outs. Persoonlijke instellingen worden alleen bij de eerste installatie aangevuld.
+De bootpartitie bevat `postshare.sh`, `console-os/runtime.py`, `console-os/config.json`, `console-os/seed.tar.gz`, `console-os/import-wifi.py` en `console-os/linux-report.sh`. `postshare.sh` wordt door Batocera uitgevoerd na het beschikbaar maken van `/userdata` en voor EmulationStation start. Netwerkfouten hebben korte time-outs. Persoonlijke instellingen worden alleen bij de eerste installatie aangevuld.
 
 ## Bronnen en licenties
 

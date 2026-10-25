@@ -51,6 +51,10 @@ REPORT="$STATE/linux-hardware.txt"
     if [ -e /sys/class/net/wlan0/operstate ]; then
         printf 'Wifi-interface: '; cat /sys/class/net/wlan0/operstate
     fi
+    echo 'Lokaal wifi-importresultaat (geen netwerknaam of wachtwoord):'
+    cat "$STATE/wifi-import-status.json" 2>/dev/null
+    echo 'Draadloze blokkeringen:'
+    rfkill list 2>/dev/null
     echo 'Klok:'; date -u
 } > "$REPORT"
 # Maak het rapport leesbaar op macOS via de FAT-bootpartitie.

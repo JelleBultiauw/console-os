@@ -8,4 +8,16 @@ hardware/
 *.log
 *.token
 config.local.json
+private/
+.private/
+secrets/
+.secrets/
+*.local.json
+*.local.conf
+*.credentials.json
+batocera.conf
+batocera-boot.conf
+.env
+.env.*
+!.env.example
 .DS_Store
