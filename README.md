@@ -32,6 +32,16 @@ Bij de test werd `/userdata` op een tijdelijke tmpfs van 256 MiB geplaatst. De o
 
 De D2-opstartbestanden bewaren service-uitvoer, systeemmeldingen en gamestartfouten. Shutdown overschrijft de opstartmetingen niet meer. Een minimumklok op de builddatum voorkomt dat een RTC die op 2022 staat meteen moderne HTTPS-certificaten afwijst; normale netwerktijdsynchronisatie blijft actief. Versie 0.1.1 herkent tijdelijke RAM-opslag, bewaart de concrete netwerkfout en accepteert een nieuwe seedversie.
 
+## D3-leestest voor gamestart en netwerk
+
+D2 bevestigt nu `/userdata` op de blijvende ext4-partitie. De gamestarter stopt vóór de emulator met `could not find any library for SDL2`. Systeemlogs tonen tegelijk Zstd/SquashFS-uitpakfouten en leesfouten voor onder andere `grep`, dat ook de netwerk- en opslagconfiguratie gebruiken. Beide systeemimages op de teruggebrachte USB komen via SHA-256 overeen met de oorspronkelijke geverifieerde bestanden; de gegevens zijn op de bouw-Mac wel uit te pakken. De precieze oorzaak op de doellaptop is nog niet vastgesteld.
+
+Een afzonderlijke Linux-test bevestigt dat de basisimage geen `ld.so.cache` bevat en dat PySDL2 zonder die cache zijn aanwezige bibliotheek niet vindt. De S00-hook bouwt deze cache met `ldconfig -X` in de tijdelijke systeemoverlay. De menustart krijgt bovendien het expliciete SDL2-pad `/usr/lib`. Na het opbouwen van de cache werken de gewone PySDL2-import en `emulatorlauncher --help` in de VM. De meegeleverde NES-game 2048 draait daar 120 frames met Nestopia en een headless videodriver; beeld, geluid en bediening in een echte game op de MacBook moeten nog worden getest.
+
+De D3-testoptie voegt `console.ramroot=1` toe en gebruikt een aparte `initrd-console-d3.gz`. Voor het aankoppelen worden beide systeemimages naar een afzonderlijke tmpfs gekopieerd. CRC32 controleert toevallige leesfouten tijdens deze kopie; dit vervangt geen cryptografische bronverificatie. Bij een fout volgt één nieuwe kopieerpoging. Games, saves en wifi-instellingen blijven op ext4. Deze test heeft minstens 7 GiB zichtbaar RAM nodig en gebruikt ongeveer 4,1 GiB daarvan voor systeemimages. Het opstarten duurt langer. Een tweede opstartoptie blijft de oorspronkelijke initramfs gebruiken. Het effect op de fysieke MacBook moet nog worden bevestigd.
+
+`tools/build-ramroot-initrd.py` accepteert uitsluitend de gecontroleerde Batocera 43.1-initramfs en wijzigt alleen het `init`-bestand in het archief. `--test-shell` maakt uitsluitend een lokale VM-testvariant; die variant mag niet op de USB worden geplaatst. De normale uitvoer start de bestaande `/sbin/init`.
+
 ## Lokale wifi-instellingen
 
 Een persoonlijk profiel kan uitsluitend lokaal op de ext4-gegevenspartitie worden geplaatst als `/userdata/system/console-os/wifi.local.json`, met eigenaar root en rechten 0600. De velden zijn `ssid`, `password` en `country`. `boot/import-wifi.py` past dit na het initialiseren van de gegevenspartitie toe met Batocera's eigen wifi-helper, zonder een shell te gebruiken of netwerknaam en wachtwoord af te drukken. De tijdelijke profielkopie wordt daarna verwijderd; Batocera bewaart de instellingen in zijn lokale configuratie. Bij mislukte configuratie blijft het profiel beschikbaar voor een volgende poging. Het importresultaat bevestigt instellingen, geen geslaagde internetverbinding.

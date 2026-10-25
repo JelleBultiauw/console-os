@@ -27,6 +27,7 @@ dmesg | tail -250 > "$OUT/kernel-laatste.txt"
 for log in /run/console-stage-*.log; do
     [ -f "$log" ] && cp "$log" "$OUT/$(basename "$log")"
 done
+[ -f /run/console-ldconfig.log ] && cp /run/console-ldconfig.log "$OUT/console-ldconfig.log"
 [ -f /var/run/boot.log ] && cp /var/run/boot.log "$OUT/init-volgorde.txt"
 [ -f /tmp/resize.log ] && cp /tmp/resize.log "$OUT/partitievergroting.txt"
 [ -f /var/log/Xorg.0.log ] && cp /var/log/Xorg.0.log "$OUT/Xorg.0.log"

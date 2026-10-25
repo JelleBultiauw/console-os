@@ -42,6 +42,8 @@ REPORT="$STATE/linux-hardware.txt"
     cat "$STATE/status.json" 2>/dev/null
     echo
     echo 'OPSLAG EN NETWERK'
+    echo 'RAM-systeemtest:'
+    cat /overlay/ramroot/verified.txt 2>/dev/null || echo 'Standaard systeemmount vanaf schijf.'
     findmnt -n -o SOURCE,FSTYPE,SIZE,AVAIL /userdata 2>/dev/null
     if ip route show default 2>/dev/null | grep -q .; then
         echo 'Standaard netwerkroute: aanwezig'
