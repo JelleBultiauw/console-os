@@ -46,6 +46,10 @@ if mount -o remount,rw /boot; then
     mkdir -p /boot/CONSOLE-RAPPORT
     cp "$REPORT" /boot/CONSOLE-RAPPORT/linux-hardware.txt
     cp "$STATE/status.json" /boot/CONSOLE-RAPPORT/updatestatus.json 2>/dev/null || true
+    [ -f /var/log/Xorg.0.log ] && cp /var/log/Xorg.0.log /boot/CONSOLE-RAPPORT/Xorg.0.log
+    [ -f /userdata/system/configs/emulationstation/es_log.txt ] && cp /userdata/system/configs/emulationstation/es_log.txt /boot/CONSOLE-RAPPORT/menu.log
+    [ -f /var/run/boot.log ] && cp /var/run/boot.log /boot/CONSOLE-RAPPORT/init-volgorde.txt
+    [ -f /tmp/resize.log ] && cp /tmp/resize.log /boot/CONSOLE-RAPPORT/partitievergroting.txt
     sync
     mount -o remount,ro /boot || true
 fi

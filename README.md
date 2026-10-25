@@ -26,6 +26,8 @@ De USB is bedoeld voor Intel x86_64-computers. Hij start niet als besturingssyst
 
 ## Grenzen van het prototype
 
+- Eerste fysieke test op de MacBookPro9,2: joystick-opstartscherm gevolgd door zwart beeld. De USB-gegevenspartitie bleef leeg en onveranderd op 512 MiB; de eigen menulaag heeft die partitie dus niet bereikt. De D1-diagnose voegt `boot/boot-custom.sh` en `boot/trace-stage.sh` toe om fasen vóór `/userdata` op FAT te loggen. Dit is diagnose, nog geen bewezen oplossing voor de oorzaak. Op de teststick zijn ook zichtbare opstartmeldingen en 1280×800 ingesteld. Laat deze test drie minuten draaien en sluit de laptop af voordat de USB wordt verwijderd.
+
 - Beeld, geluid, wifi en Bluetooth moeten nog op de echte MacBook worden getest. De diagnose in Windows bewijst Linux-compatibiliteit niet.
 - De Broadcom BCM4331 wordt eerst met de beschikbare ingebouwde Linux-driver getest. Een Windows-driverfout is geen bewijs van een defecte chip.
 - De Wii U GamePad met scherm is nog niet gekoppeld. Die vereist aanvullend werk met geschikte wifi-hardware en gespecialiseerde software; gewone Bluetooth-pairing is niet voldoende.
