@@ -33,6 +33,10 @@ De USB is bedoeld voor Intel x86_64-computers. Hij start niet als besturingssyst
 - Er wordt niet automatisch teruggeschakeld als een nieuw thema visueel verkeerd blijkt. Wel blijft de vorige versie bewaard en is `python3 /boot/console-os/runtime.py rollback` beschikbaar.
 - Deze eerste updater gebruikt publieke releases zonder token. Privérepositories werken nog niet met deze updater. Er wordt nooit een ontwikkelaarstoken van deze Mac naar de USB gekopieerd.
 
+## Uitgevoerde controles voor 0.1.0
+
+18 geautomatiseerde tests slagen voor de updater en de USB-doelcontroles. De image is via UEFI in QEMU opgestart; de eigen laag is onder Linux geïnstalleerd en de GitHub-controle is uitgevoerd. De virtuele videokaart heeft in deze configuratie geen bruikbare GLX-renderer. Het grafische thema en de fysieke controllers zijn daarom **nog niet visueel/functioneel geverifieerd op de doellaptop**. De image bevat wel de i915-kernelmodule en de Crocus-driver voor oudere Intel-graphics. De echte MacBook is de volgende hardwaretest.
+
 ## Een release maken
 
 Pas `payload/manifest.json` en het versienummer in het thema aan. Voer vervolgens uit:
