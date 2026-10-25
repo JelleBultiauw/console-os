@@ -43,9 +43,9 @@ De D2-opstartbestanden bewaren service-uitvoer, systeemmeldingen en gamestartfou
 - Er wordt niet automatisch teruggeschakeld als een nieuw thema visueel verkeerd blijkt. Wel blijft de vorige versie bewaard en is `python3 /boot/console-os/runtime.py rollback` beschikbaar.
 - Deze eerste updater gebruikt publieke releases zonder token. Privérepositories werken nog niet met deze updater. Er wordt nooit een ontwikkelaarstoken van deze Mac naar de USB gekopieerd.
 
-## Uitgevoerde controles voor 0.1.0
+## Uitgevoerde controles
 
-18 geautomatiseerde tests slagen voor de updater en de USB-doelcontroles. De image is via UEFI in QEMU opgestart; de eigen laag is onder Linux geïnstalleerd en de GitHub-controle is uitgevoerd. De virtuele videokaart heeft in deze configuratie geen bruikbare GLX-renderer. Het grafische thema en de fysieke controllers zijn daarom **nog niet visueel/functioneel geverifieerd op de doellaptop**. De image bevat wel de i915-kernelmodule en de Crocus-driver voor oudere Intel-graphics. De echte MacBook is de volgende hardwaretest.
+21 geautomatiseerde tests slagen voor de updater en de USB-doelcontroles. UEFI-boot en de installatie van de eigen laag zijn onder Linux gecontroleerd. De fysieke MacBook-test bevestigt werkend beeld en PS4-bediening. De uitgebreide USB-gegevenspartitie is offline gecontroleerd met e2fsck en de partitietabel met sgdisk. Het blijvend aankoppelen, het starten van games en een geslaagde internetverbinding moeten na D2 nog op de laptop worden bevestigd.
 
 ## Een release maken
 
