@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+dist/
+*.img
+*.img.gz
+*.qcow2
+hardware/
+*.log
+*.token
+config.local.json
+.DS_Store

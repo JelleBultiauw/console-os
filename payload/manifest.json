@@ -1,0 +1,7 @@
+{
+  "name": "Console OS",
+  "version": "0.1.0",
+  "architecture": "x86_64",
+  "base": "batocera-43.1",
+  "schema": 1
+}

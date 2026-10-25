@@ -1,0 +1,6 @@
+{
+  "repository": "JelleBultiauw/console-os",
+  "automatic_updates": true,
+  "channel": "stable",
+  "asset_name": "console-os-update.tar.gz"
+}
