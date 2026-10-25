@@ -210,13 +210,24 @@ class Console:
             self.status('updated', 'Update geinstalleerd: ' + installed, version=installed, previous=current)
             return True
         except (OSError, ValueError, KeyError, StopIteration, tarfile.TarError) as error:
-            self.status('offline-or-error', 'Update overgeslagen; bestaande versie blijft beschikbaar.', version=current, reason=type(error).__name__)
+            detail = str(getattr(error, 'reason', error))[:300]
+            self.status('offline-or-error', 'Update overgeslagen; bestaande versie blijft beschikbaar.', version=current, reason=type(error).__name__, detail=detail)
             return False
+
+    def temporary_storage(self):
+        try:
+            rows = Path('/proc/mounts').read_text().splitlines()
+        except OSError:
+            return False
+        return any(len(fields) >= 3 and fields[1] == str(self.userdata) and fields[2] in ('tmpfs', 'ramfs') for fields in (row.split() for row in rows))
 
     def boot_system(self):
         if self.current_version() == '0.0.0':
-            self.install(self.boot / 'seed.tar.gz', '0.1.0')
+            self.install(self.boot / 'seed.tar.gz')
         self.configure_first_boot()
+        if self.temporary_storage():
+            self.status('temporary-storage', 'Gegevens staan tijdelijk in RAM; opslagherstel nodig voordat instellingen blijvend worden bewaard.', version=self.current_version())
+            return
         self.update()
 
     def rollback(self):

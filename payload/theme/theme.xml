@@ -4,7 +4,7 @@
   <view name="system,basic,detailed,video">
     <image name="background" extra="true"><path>./background.svg</path><pos>0 0</pos><size>1 1</size><zIndex>0</zIndex></image>
     <text name="console-brand" extra="true"><text>CONSOLE OS</text><pos>0.06 0.055</pos><size>0.88 0.065</size><fontSize>0.038</fontSize><color>F1F2F4</color><zIndex>60</zIndex></text>
-    <text name="console-edition" extra="true"><text>MAC EDITION / 0.1.0</text><pos>0.06 0.13</pos><size>0.88 0.035</size><fontSize>0.017</fontSize><color>A7ADB5</color><zIndex>60</zIndex></text>
+    <text name="console-edition" extra="true"><text>MAC EDITION / 0.1.1</text><pos>0.06 0.13</pos><size>0.88 0.035</size><fontSize>0.017</fontSize><color>A7ADB5</color><zIndex>60</zIndex></text>
     <helpsystem name="help"><pos>0.06 0.93</pos><textColor>C4C9D0</textColor><iconColor>C6F27A</iconColor><fontSize>0.02</fontSize></helpsystem>
   </view>
   <view name="system">

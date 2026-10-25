@@ -1,4 +1,4 @@
-# Console OS — Mac edition 0.1.0
+# Console OS — Mac edition 0.1.1
 
 Eerste USB-prototype voor een Intel MacBookPro9,2: een eigen gamemenu en GitHub-updatecode bovenop de bestaande Batocera Linux 43.1 x86_64-distributie. De Linux-kernel, drivers, EmulationStation en emulators zijn van hun oorspronkelijke makers. Dit project bouwt die onderdelen niet vanaf nul.
 
@@ -22,7 +22,15 @@ De USB is bedoeld voor Intel x86_64-computers. Hij start niet als besturingssyst
 - Controleert bij opstarten de nieuwste stabiele GitHub-release. Alleen een hoger versienummer wordt geïnstalleerd.
 - Controleert de SHA-256 en pakketstructuur voordat de actieve versiemap atomair wordt gewisseld. De vorige versie blijft beschikbaar.
 - Geen internet, ontbrekende release of downloadfout: het bestaande menu start door.
-- Slaat na ongeveer 25 seconden een Linux-hardwarerapport op in `CONSOLE-RAPPORT` op de leesbare bootpartitie. Dit bevat geen wifiwachtwoorden of netwerkadressen.
+- Slaat na ongeveer 25 seconden een Linux-hardwarerapport op in `CONSOLE-RAPPORT` op de leesbare bootpartitie. Configuratiebestanden met wifiwachtwoorden worden niet meegenomen. Technische systeemlogs kunnen lokale apparaat- en netwerkgegevens bevatten; rapporten blijven lokaal en worden niet naar GitHub gestuurd.
+
+## D2-opslagtest en 0.1.1
+
+De fysieke MacBook-test bevestigt Intel HD Graphics 4000 met werkende i915/Crocus-versnelling en een werkende PS4-controller via USB. Wifi wordt als `wlan0` met de b43-driver herkend; een geslaagde internetverbinding is nog niet vastgesteld.
+
+Bij de test werd `/userdata` op een tijdelijke tmpfs van 256 MiB geplaatst. De oorspronkelijke ext4-partitie was schoon maar nog nooit aangekoppeld. Op de teststick is de partitie offline uitgebreid tot ongeveer 20 GB. De aangepaste partitietabel en het vergrote ext4-bestandssysteem zijn gecontroleerd. `recover-userdata.sh` probeert vóór de populatiefase expliciet ext4 op de gegevenspartitie naast de actieve bootpartitie wanneer de standaardmethode op RAM terugvalt. Dit script formatteert geen schijven. De mount en het starten van games moeten nog opnieuw op de doellaptop worden bevestigd.
+
+De D2-opstartbestanden bewaren service-uitvoer, systeemmeldingen en gamestartfouten. Shutdown overschrijft de opstartmetingen niet meer. Een minimumklok op de builddatum voorkomt dat een RTC die op 2022 staat meteen moderne HTTPS-certificaten afwijst; normale netwerktijdsynchronisatie blijft actief. Versie 0.1.1 herkent tijdelijke RAM-opslag, bewaart de concrete netwerkfout en accepteert een nieuwe seedversie.
 
 ## Grenzen van het prototype
 

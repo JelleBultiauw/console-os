@@ -40,6 +40,18 @@ REPORT="$STATE/linux-hardware.txt"
     echo
     echo 'EIGEN UPDATESTATUS'
     cat "$STATE/status.json" 2>/dev/null
+    echo
+    echo 'OPSLAG EN NETWERK'
+    findmnt -n -o SOURCE,FSTYPE,SIZE,AVAIL /userdata 2>/dev/null
+    if ip route show default 2>/dev/null | grep -q .; then
+        echo 'Standaard netwerkroute: aanwezig'
+    else
+        echo 'Standaard netwerkroute: ontbreekt'
+    fi
+    if [ -e /sys/class/net/wlan0/operstate ]; then
+        printf 'Wifi-interface: '; cat /sys/class/net/wlan0/operstate
+    fi
+    echo 'Klok:'; date -u
 } > "$REPORT"
 # Maak het rapport leesbaar op macOS via de FAT-bootpartitie.
 if mount -o remount,rw /boot; then
@@ -50,6 +62,7 @@ if mount -o remount,rw /boot; then
     [ -f /userdata/system/configs/emulationstation/es_log.txt ] && cp /userdata/system/configs/emulationstation/es_log.txt /boot/CONSOLE-RAPPORT/menu.log
     [ -f /var/run/boot.log ] && cp /var/run/boot.log /boot/CONSOLE-RAPPORT/init-volgorde.txt
     [ -f /tmp/resize.log ] && cp /tmp/resize.log /boot/CONSOLE-RAPPORT/partitievergroting.txt
+    [ -f /var/log/messages ] && tail -400 /var/log/messages > /boot/CONSOLE-RAPPORT/systeemmeldingen.txt
     sync
     mount -o remount,ro /boot || true
 fi

@@ -6,6 +6,7 @@ from pathlib import Path
 import tarfile
 import tempfile
 import unittest
+import urllib.error
 from unittest.mock import Mock
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -138,6 +139,27 @@ class UpdateTests(unittest.TestCase):
         for value in ('v1.0', '1.0.0-rc1', '../1.0.0', '01.0.0'):
             with self.assertRaises(ValueError):
                 runtime.version_tuple(value)
+
+    def test_ram_fallback_does_not_download_updates(self):
+        self.console.temporary_storage = Mock(return_value=True)
+        self.console.request = Mock()
+        self.console.boot_system()
+        self.console.request.assert_not_called()
+        self.assertEqual(runtime.read_json(self.console.state / 'status.json')['state'], 'temporary-storage')
+
+    def test_error_report_retains_network_cause(self):
+        self.console.request = Mock(side_effect=urllib.error.URLError('Network unreachable'))
+        self.assertFalse(self.console.update())
+        self.assertEqual(runtime.read_json(self.console.state / 'status.json')['detail'], 'Network unreachable')
+
+    def test_fresh_boot_accepts_newer_seed(self):
+        fresh = runtime.Console(self.root / 'fresh-state', self.root / 'fresh-boot', self.root / 'fresh-userdata')
+        fresh.boot.mkdir()
+        (fresh.boot / 'seed.tar.gz').write_bytes(package('0.1.1'))
+        (fresh.boot / 'config.json').write_text((ROOT / 'boot/config.json').read_text())
+        fresh.request = Mock(side_effect=OSError('offline'))
+        fresh.boot_system()
+        self.assertEqual(fresh.current_version(), '0.1.1')
 
 
 if __name__ == '__main__':
